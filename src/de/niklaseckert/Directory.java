@@ -3,10 +3,7 @@ package de.niklaseckert;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Directory {
@@ -63,10 +60,14 @@ public class Directory {
     private void calculateSize() {
         File dir = new File(path);
 
-        for (File file : Objects.requireNonNull(dir.listFiles())) {
-            if (file.isFile()) {
-                size += file.length();
+        try {
+            for (File file : Objects.requireNonNull(dir.listFiles())) {
+                if (file.isFile()) {
+                    size += file.length();
+                }
             }
+        } catch (NullPointerException e) {
+
         }
 
         for (Directory sub : subDirectories) {
@@ -76,10 +77,17 @@ public class Directory {
 
     private void findSubDirectories() throws IOException {
         File dir = new File(path);
-        for (File file : Objects.requireNonNull(dir.listFiles())) {
-            if (file.isDirectory()) {
-                subDirectories.add(new Directory(file.getCanonicalPath()));
+
+        try {
+            for (File file : Objects.requireNonNull(dir.listFiles())) {
+                if (file != null) {
+                    if (file.isDirectory()) {
+                        subDirectories.add(new Directory(file.getCanonicalPath()));
+                    }
+                }
             }
+        } catch (NullPointerException e) {
+
         }
     }
 
